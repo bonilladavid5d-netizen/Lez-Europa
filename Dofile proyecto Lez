@@ -1,0 +1,322 @@
+clear all
+set more off
+
+* Los pasos previos de lo que se contienen aca son: primero se llenó manualemnte si la ciudad tenia un LEZ activo revisando manualmente en la pagina, esto también se hizo con los valores del NO2, que tambien se llenaron manualmente
+* luego para la tamperatura y precipitación se descaban las bases de datos (42 en total) mediante una URL específica, ej: la de Ámsterdam es:https://archive-api.open-meteo.com/v1/archive?latitude=52.3676&longitude=4.9041&start_date=2004-01-01&end_date=2023-12-31&daily=precipitation_sum,temperature_2m_mean&timezone=UTC&format=csv
+* luego se corria el siguienet codigo para calcular el valor promedio anula
+* gen fecha = date(latitude , "YMD")
+* format fecha %td
+* gen year = year(fecha)
+* drop if _n <= 2
+* destring longitude, replace
+* bysort year: egen precip_mean_year = mean(longitude)
+* destring elevation, replace
+* bysort year: egen temp_mean_year = mean(elevation)
+* collapse (mean) precip_mean_year temp_mean_year, by(year)
+* luego se pego a la base que ya se tenia manualmente
+* Es por esto que se comenzó con la base "import excel use "/Users/davidbonilla/Desktop/base_original.dta"
+clear all
+import delimited "/Users/davidbonilla/Downloads/estat_met_10r_3gdp.tsv", varnames(1) clear
+split frequnitmetroregtime_period, parse(,) gen(part)
+drop part1 frequnitmetroregtime_period
+keep if part2 == "EUR_HAB"
+rename part3 geo
+replace geo = "Aarhus"           if geo == "DK002M"
+replace geo = "Amsterdam"        if geo == "NL002MC"
+replace geo = "Antwerp"          if geo == "BE002M"
+replace geo = "Athens"           if geo == "EL001MC"
+replace geo = "Barcelona"        if geo == "ES002M"
+replace geo = "Berlin"           if geo == "DE001MC"
+replace geo = "Bratislava"       if geo == "SK001MC"
+replace geo = "Brno"             if geo == "CZ002M"
+replace geo = "Brussels"         if geo == "BE001MC"
+replace geo = "Bucharest"        if geo == "RO001MC"
+replace geo = "Budapest"         if geo == "HU001MC"
+replace geo = "Cluj-Napoca"      if geo == "RO002M"
+replace geo = "Copenhagen"       if geo == "DK001MC"
+replace geo = "Cork"             if geo == "IE002M"
+replace geo = "Debrecen"         if geo == "HU005M"
+replace geo = "Dublin"           if geo == "IE001MC"
+replace geo = "Gothenburg"       if geo == "SE002M"
+replace geo = "Graz"             if geo == "AT002M"
+replace geo = "Hamburg"          if geo == "DE002M"
+replace geo = "Helsinki"         if geo == "FI001MC"
+replace geo = "Kaunas"           if geo == "LT002M"
+replace geo = "Kosice"           if geo == "SK002M"
+replace geo = "Lisbon"           if geo == "PT001MC"
+replace geo = "Ljubljana"        if geo == "SI001MC"
+replace geo = "Lodz"             if geo == "PL002M"
+replace geo = "Luxembourg City"  if geo == "LU001MC"
+replace geo = "Lyon"             if geo == "FR003M"
+replace geo = "Madrid"           if geo == "ES001MC"
+replace geo = "Marseille"        if geo == "FR203M"
+replace geo = "Milan"            if geo == "IT002M"
+replace geo = "Munich"           if geo == "DE003M"
+replace geo = "Naples"           if geo == "IT003M"
+replace geo = "Nicosia"          if geo == "CY001MC"
+replace geo = "Paris"            if geo == "FR001MC"
+replace geo = "Plovdiv"          if geo == "BG002M"
+replace geo = "Porto"            if geo == "PT002M"
+replace geo = "Prague"           if geo == "CZ001MC"
+replace geo = "Riga"             if geo == "LV001MC"
+replace geo = "Rome"             if geo == "IT001MC"
+replace geo = "Rotterdam"        if geo == "NL003M"
+replace geo = "Sofia"            if geo == "BG001MC"
+replace geo = "Split"            if geo == "HR005M"
+replace geo = "Stockholm"        if geo == "SE001MC"
+replace geo = "Tallinn"          if geo == "EE001MC"
+replace geo = "Tampere"          if geo == "FI002M"
+replace geo = "The Hague"        if geo == "NL001M"
+replace geo = "Thessaloniki"     if geo == "EL002M"
+replace geo = "Valencia"         if geo == "ES003M"
+replace geo = "Vienna"           if geo == "AT001MC"
+replace geo = "Vilnius"          if geo == "LT001MC"
+replace geo = "Warsaw"           if geo == "PL001MC"
+replace geo = "Zagreb"           if geo == "HR001MC"
+keep if geo == "Aarhus"          ///
+    | geo == "Amsterdam"         ///
+    | geo == "Antwerp"           ///
+    | geo == "Athens"            ///
+    | geo == "Barcelona"         ///
+    | geo == "Berlin"            ///
+    | geo == "Bratislava"        ///
+    | geo == "Brno"              ///
+    | geo == "Brussels"          ///
+    | geo == "Bucharest"         ///
+    | geo == "Budapest"          ///
+    | geo == "Cluj-Napoca"       ///
+    | geo == "Copenhagen"        ///
+    | geo == "Cork"              ///
+    | geo == "Debrecen"          ///
+    | geo == "Dublin"            ///
+    | geo == "Gothenburg"        ///
+    | geo == "Graz"              ///
+    | geo == "Hamburg"           ///
+    | geo == "Helsinki"          ///
+    | geo == "Kaunas"            ///
+    | geo == "Kosice"            ///
+    | geo == "Lisbon"            ///
+    | geo == "Ljubljana"         ///
+    | geo == "Lodz"              ///
+    | geo == "Luxembourg City"   ///
+    | geo == "Lyon"              ///
+    | geo == "Madrid"            ///
+    | geo == "Marseille"         ///
+    | geo == "Milan"             ///
+    | geo == "Munich"            ///
+    | geo == "Naples"            ///
+    | geo == "Nicosia"           ///
+    | geo == "Paris"             ///
+    | geo == "Plovdiv"           ///
+    | geo == "Porto"             ///
+    | geo == "Prague"            ///
+    | geo == "Riga"              ///
+    | geo == "Rome"              ///
+    | geo == "Rotterdam"         ///
+    | geo == "Sofia"             ///
+    | geo == "Split"             ///
+    | geo == "Stockholm"         ///
+    | geo == "Tallinn"           ///
+    | geo == "Tampere"           ///
+    | geo == "The Hague"         ///
+    | geo == "Thessaloniki"      ///
+    | geo == "Valencia"          ///
+    | geo == "Vienna"            ///
+    | geo == "Vilnius"           ///
+    | geo == "Warsaw"            ///
+    | geo == "Zagreb"
+local anio = 2000
+foreach var of varlist v2-v24
+ds y2000-y2022, has(type string)
+local svars `r(varlist)'
+foreach v of local svars
+reshape long y, i(geo) j(year)
+rename y gdp_pc   //
+egen id_city_year = group(geo year), label
+save "/Users/davidbonilla/Desktop/panel_gdp_long.dta", replace
+use "/Users/davidbonilla/Desktop/base_original.dta"
+drop id_city_year
+egen id_city_year = group(city year), label
+merge 1:1 id_city_year using "/Users/davidbonilla/Desktop/panel_gdp_long.dta"
+keep if _merge == 3
+drop _merge
+drop part2
+save "/Users/davidbonilla/Desktop/yacasiiii.dta", replace
+import delimited "/Users/davidbonilla/Downloads/estat_demo_r_pjanaggr3.tsv", varnames(1) clear
+split frequnitsexagegeotime_period, parse(,) gen(part)
+rename part4 poblacion
+drop part1 part2 frequnitsexagegeotime_period
+keep if part3 == "T"
+keep if poblacion == "TOTAL"
+gen str30 city = ""
+rename part5 geo
+replace city = "Graz"        if geo == "AT221"
+replace city = "Vienna"      if geo == "AT130"
+replace city = "Antwerp"     if geo == "BE211"
+replace city = "Brussels"    if geo == "BE100"
+replace city = "Plovdiv"     if geo == "BG421"
+replace city = "Sofia"       if geo == "BG411"
+replace city = "Split"       if geo == "HR035"
+replace city = "Zagreb"      if geo == "HR050"
+replace city = "Nicosia"     if geo == "CY000"
+replace city = "Prague"      if geo == "CZ010"
+replace city = "Brno"        if geo == "CZ064"
+replace city = "Aarhus"      if geo == "DK042"
+replace city = "Copenhagen"  if geo == "DK011"
+replace city = "Tallinn"     if geo == "EE001"
+replace city = "Helsinki"    if geo == "FI1B1"
+replace city = "Tampere"     if geo == "FI19B"
+replace city = "Lyon"        if geo == "FRK26"
+replace city = "Marseille"   if geo == "FRL04"
+replace city = "Paris"       if geo == "FR101"
+replace city = "Berlin"      if geo == "DE300"
+replace city = "Hamburg"     if geo == "DE600"
+replace city = "Munich"      if geo == "DE212"
+replace city = "Athens"         if geo == "EL303"
+replace city = "Thessaloniki"   if geo == "EL522"
+replace city = "Budapest"    if geo == "HU110"
+replace city = "Debrecen"    if geo == "HU321"
+replace city = "Cork"        if geo == "IE053"
+replace city = "Dublin"      if geo == "IE061"
+replace city = "Milan"       if geo == "ITC4C"
+replace city = "Naples"      if geo == "ITF33"
+replace city = "Rome"        if geo == "ITI43"
+replace city = "Riga"        if geo == "LV00A"
+replace city = "Kaunas"      if geo == "LT022"
+replace city = "Vilnius"     if geo == "LT011"
+replace city = "Luxembourg City" if geo == "LU000"
+replace city = "Amsterdam"   if geo == "NL32B"
+replace city = "Rotterdam"   if geo == "NL366"
+replace city = "The Hague"   if geo == "NL361"
+replace city = "Lodz"        if geo == "PL711"
+replace city = "Warsaw"      if geo == "PL911"
+replace city = "Lisbon"      if geo == "PT1A0"
+replace city = "Porto"       if geo == "PT11A"
+replace city = "Bucharest"   if geo == "RO321"
+replace city = "Cluj-Napoca" if geo == "RO113"
+replace city = "Bratislava"  if geo == "SK010"
+replace city = "Kosice"      if geo == "SK042"
+replace city = "Ljubljana"   if geo == "SI041"
+replace city = "Barcelona"   if geo == "ES511"
+replace city = "Madrid"      if geo == "ES300"
+replace city = "Valencia"    if geo == "ES523"
+replace city = "Gothenburg"  if geo == "SE232"
+replace city = "Stockholm"   if geo == "SE110"
+keep if city == "Aarhus"          ///
+    | city == "Amsterdam"         ///
+    | city == "Antwerp"           ///
+    | city == "Athens"            ///
+    | city == "Barcelona"         ///
+    | city == "Berlin"            ///
+    | city == "Bratislava"        ///
+    | city == "Brno"              ///
+    | city == "Brussels"          ///
+    | city == "Bucharest"         ///
+    | city == "Budapest"          ///
+    | city == "Cluj-Napoca"       ///
+    | city == "Copenhagen"        ///
+    | city == "Cork"              ///
+    | city == "Debrecen"          ///
+    | city == "Dublin"            ///
+    | city == "Gothenburg"        ///
+    | city == "Graz"              ///
+    | city == "Hamburg"           ///
+    | city == "Helsinki"          ///
+    | city == "Kaunas"            ///
+    | city == "Kosice"            ///
+    | city == "Lisbon"            ///
+    | city == "Ljubljana"         ///
+    | city == "Lodz"              ///
+    | city == "Luxembourg City"   ///
+    | city == "Lyon"              ///
+    | city == "Madrid"            ///
+    | city == "Marseille"         ///
+    | city == "Milan"             ///
+    | city == "Munich"            ///
+    | city == "Naples"            ///
+    | city == "Nicosia"           ///
+    | city == "Paris"             ///
+    | city == "Plovdiv"           ///
+    | city == "Porto"             ///
+    | city == "Prague"            ///
+    | city == "Riga"              ///
+    | city == "Rome"              ///
+    | city == "Rotterdam"         ///
+    | city == "Sofia"             ///
+    | city == "Split"             ///
+    | city == "Stockholm"         ///
+    | city == "Tallinn"           ///
+    | city == "Tampere"           ///
+    | city == "The Hague"         ///
+    | city == "Thessaloniki"      ///
+    | city == "Valencia"          ///
+    | city == "Vienna"            ///
+    | city == "Vilnius"           ///
+    | city == "Warsaw"            ///
+    | city == "Zagreb"
+local anio = 1990
+foreach var of varlist v2-v36
+ds y2000-y2022, has(type string)
+local svars `r(varlist)'
+ds y*
+destring `r(varlist)', replace ignore(" :abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+reshape long y, i(city) j(year)
+drop poblacion
+rename y poblacion
+egen id_city_year = group(geo year), label
+save "/Users/davidbonilla/Desktop/panel_pblación_long.dta", replace
+use "/Users/davidbonilla/Desktop/yacasiiii.dta", clear
+merge 1:1 id_city_year using "/Users/davidbonilla/Desktop/panel_pblación_long.dta"
+keep if _merge == 3
+drop _merge
+destring no2_ug_m3, replace
+save "/Users/davidbonilla/Desktop/PORFIN.dta", replace
+use "/Users/davidbonilla/Desktop/PORFIN.dta"
+gen ln_gdp_pc = ln(gdp_pc)
+gen ln_poblacion = ln(poblacion)
+bys city: egen n_years = count(year)
+tab n_years
+drop id_city
+encode city, gen(id_city)
+bys id_city (year): gen year_treat = year if lez_active == 1
+drop year_treat
+ssc install csdid, replace
+ssc install estout, replace
+capture drop g_lez
+capture drop year_treat
+bys id_city (year): gen year_treat = year if lez_active == 1
+bys id_city: egen g_lez = min(year_treat)
+replace g_lez = 0 if missing(g_lez)
+tab g_lez
+csdid no2_ug_m3 temperatura precipitación ln_gdp_pc ln_poblacion, ///
+    ivar(id_city) time(year) gvar(g_lez) method(dripw) notyet ///
+    vce(cluster id_city)
+
+estat simple
+estat event
+csdid_plot, title("LEZ sobre NO2 (Callaway-Sant'Anna)") ///
+    ytitle("ATT NO2 (µg/m³)") xtitle("Años desde tratamiento")
+xtset id_city year
+foreach v of varlist  precipitación no2_ug_m3
+        title("Evolución de `v' por ciudad") ///
+        ytitle("`v'") xtitle("Año")
+summarize no2_ug_m3, detail
+bys city: egen ever_lez = max(lez_active)
+label define ever_lez 0 "Nunca LEZ" 1 "Alguna vez LEZ"
+label values ever_lez ever_lez
+tabstat no2_ug_m3, by(ever_lez) ///
+    stat(mean sd) columns(statistics)
+summarize precipitación temperatura
+tabstat precipitación temperatura, by(ever_lez) ///
+    stat(mean sd) columns(statistics)
+summarize poblacion gdp_pc
+tabstat poblacion gdp_pc, by(ever_lez) ///
+    stat(mean sd) columns(statistics)
+xtset id_city year
+gen ever_treat = (g_lez > 0)
+gen rel_year = year - g_lez if ever_treat
+gen t = year - 2004      //
+xtreg no2_ug_m3 c.t##i.ever_treat i.year if rel_year <= -1 | ever_treat==0, ///
+      fe cluster(id_city)
+test c.t#1.ever_treat
+log close _all
